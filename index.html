@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fortune Gems Pro</title>
+    <title>Fortune Gems Pro: Alive Edition</title>
     <style>
-        /* --- CORE STYLING --- */
+        /* --- 1. CORE STYLING --- */
         body {
             margin: 0;
             padding: 0;
             background-color: #050505;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+
+        /* --- ANIMATION: Background Breathing --- */
+        @keyframes bg-drift {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); } /* Slight Zoom */
+            100% { transform: scale(1); }
         }
 
         .game-wrapper {
@@ -32,9 +39,12 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            
+            /* Background Zinda ho gaya */
+            animation: bg-drift 20s infinite ease-in-out;
         }
 
-        /* --- HEADER (New Balance UI) --- */
+        /* --- HEADER --- */
         .header {
             display: flex;
             justify-content: space-between;
@@ -52,7 +62,6 @@
         .home-btn:active { transform: scale(0.9); }
         .home-btn img { width: 100%; height: 100%; object-fit: contain; }
         
-        /* New Balance Container */
         .balance-container {
             position: relative;
             width: 160px;
@@ -62,7 +71,6 @@
             align-items: center;
         }
 
-        /* Background Image Plate */
         .balance-bg {
             position: absolute;
             width: 100%;
@@ -70,7 +78,6 @@
             z-index: 1;
         }
 
-        /* Text and Icon Layer */
         .balance-content {
             position: relative;
             z-index: 2;
@@ -79,22 +86,11 @@
             gap: 8px;
             width: 100%;
             justify-content: center;
-            padding-right: 10px; /* Thoda right shift text center karne k liye */
+            padding-right: 10px;
         }
 
-        .balance-icon {
-            width: 30px;
-            height: 30px;
-            filter: drop-shadow(0 0 5px gold);
-        }
-
-        .balance-text {
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 0 2px 2px #000;
-            font-family: 'Courier New', Courier, monospace; /* Digital look */
-        }
+        .balance-icon { width: 30px; height: 30px; filter: drop-shadow(0 0 5px gold); }
+        .balance-text { font-size: 18px; font-weight: bold; color: #fff; text-shadow: 0 2px 2px #000; }
 
         /* --- REELS SECTION --- */
         .reels-section {
@@ -103,6 +99,13 @@
             justify-content: center;
             align-items: center;
             position: relative; 
+        }
+
+        /* --- ANIMATION: Frame Glow --- */
+        @keyframes jungle-glow {
+            0% { filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); }
+            50% { filter: drop-shadow(0 15px 35px rgba(255, 215, 0, 0.4)); } /* Gold Flash */
+            100% { filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); }
         }
 
         .frame-overlay {
@@ -114,7 +117,9 @@
             left: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none; 
-            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9));
+            
+            /* Frame breathing effect */
+            animation: jungle-glow 5s infinite ease-in-out;
         }
 
         .reels-frame {
@@ -153,6 +158,8 @@
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
+            position: relative;
+            overflow: hidden; /* Shine bahar na jaye */
         }
 
         .symbol img {
@@ -160,6 +167,28 @@
             height: 100%;
             object-fit: cover; 
             display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- ANIMATION: Symbol Shine (Luxury Effect) --- */
+        .symbol::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent);
+            transform: skewX(-25deg);
+            z-index: 2;
+            animation: shine-sweep 6s infinite;
+        }
+        
+        @keyframes shine-sweep {
+            0% { left: -150%; }
+            20% { left: 150%; } /* Fast swipe */
+            100% { left: 150%; } /* Wait */
         }
 
         /* --- CONTROLS --- */
@@ -184,39 +213,53 @@
         .btn:active { transform: scale(0.9); filter: brightness(0.8); }
 
         .btn-small img { width: 70px; height: 70px; object-fit: contain; }
+
+        /* --- ANIMATION: Spin Button Pulse --- */
+        @keyframes pulse-gold {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px gold); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 15px gold); brightness(1.2); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 5px gold); }
+        }
+
         .btn-large img { 
             width: 110px; 
             height: 110px; 
             object-fit: contain; 
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2)); 
+            
+            /* Dhadkan */
+            animation: pulse-gold 2s infinite ease-in-out;
         }
 
+        /* Spin Animation (Pulse ko override karega) */
         @keyframes rotate-center {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .spinning-active { animation: rotate-center 0.8s linear infinite; }
+        .spinning-active { animation: rotate-center 0.5s linear infinite !important; }
+        
         .turbo-active img { filter: brightness(1.5) drop-shadow(0 0 8px #00ffff); }
-        .blur { filter: blur(8px); transition: filter 0.1s; }
+        .blur { filter: blur(5px); transition: filter 0.1s; }
 
-        /* Win Animation Text */
+        /* Win Message */
         #winMessage {
             position: absolute;
-            top: 40%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 40px;
-            font-weight: bold;
+            font-size: 50px;
+            font-weight: 900;
             color: #ffd700;
-            text-shadow: 0 0 10px red;
+            text-shadow: 0 0 10px red, 0 0 20px orange;
             display: none;
             z-index: 100;
-            animation: pop 0.5s ease-out;
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            animation: pop-bounce 0.8s ease-out infinite alternate;
         }
-        @keyframes pop {
-            0% { transform: translate(-50%, -50%) scale(0); }
-            80% { transform: translate(-50%, -50%) scale(1.2); }
-            100% { transform: translate(-50%, -50%) scale(1); }
+        
+        @keyframes pop-bounce {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.2); }
         }
 
     </style>
@@ -234,7 +277,6 @@
             
             <div class="balance-container">
                 <img src="assets/ui_balance_bg.png" class="balance-bg" alt="BG">
-                
                 <div class="balance-content">
                     <img src="assets/icon_cash.png" class="balance-icon" alt="$">
                     <span id="balanceText" class="balance-text">5000</span>
@@ -271,9 +313,9 @@
         const SYMBOL_HEIGHT = 88; 
         const TOTAL_SYMBOLS = 30; 
         
-        // Game Logic Variables
+        // Game Variables
         let currentBalance = 5000;
-        const betAmount = 100; // Har spin ke 100 katenge
+        const betAmount = 100;
 
         const symbols = [
             'assets/sym_gem_red.png',
@@ -297,7 +339,7 @@
         const winMsg = document.getElementById('winMessage');
 
         function initReels() {
-            updateBalance(0); // Update text on load
+            updateBalance(0); 
             reelStrips.forEach(strip => {
                 let html = '';
                 for(let i=0; i < TOTAL_SYMBOLS; i++) { 
@@ -312,18 +354,17 @@
         function spin() {
             if (isSpinning) return;
             
-            // 1. Check Balance
             if(currentBalance < betAmount) {
                 alert("Low Balance! Please Recharge.");
                 return;
             }
 
-            // 2. Deduct Money
+            // Deduct Money
             updateBalance(-betAmount);
             
             isSpinning = true;
-            spinIcon.classList.add('spinning-active'); 
-            winMsg.style.display = 'none'; // Hide win message
+            spinIcon.classList.add('spinning-active'); // Spin animation starts
+            winMsg.style.display = 'none';
 
             const duration = isTurbo ? 0.5 : 2.0; 
 
@@ -344,24 +385,20 @@
                     strip.parentElement.classList.remove('blur');
                     strip.style.transition = 'none'; 
                 });
-                spinIcon.classList.remove('spinning-active'); 
+                spinIcon.classList.remove('spinning-active'); // Pulse animation wapis aa jayegi
                 isSpinning = false;
                 
-                // 3. CHECK WIN (Simple Logic for Demo)
                 checkWin();
 
             }, (duration * 1000) + (isTurbo ? 300 : 1000));
         }
 
-        // --- Win/Loss Logic ---
         function checkWin() {
-            // Is game mein abhi 30% chance hai jeetne ka (Fake Logic for visuals)
-            // Asal game mein array match karna hota hai, lekin ye demo hai
-            
-            const isWin = Math.random() < 0.3; // 30% chance
+            // Demo Logic: 30% chance to win
+            const isWin = Math.random() < 0.3; 
 
             if(isWin) {
-                const winAmount = betAmount * (Math.floor(Math.random() * 5) + 2); // 2x to 6x win
+                const winAmount = betAmount * (Math.floor(Math.random() * 5) + 2);
                 updateBalance(winAmount);
                 showWinEffect(winAmount);
             }
@@ -375,7 +412,6 @@
         function showWinEffect(amount) {
             winMsg.innerText = `WIN: +${amount}`;
             winMsg.style.display = 'block';
-            // Yahan sound effect bhi laga sakte hain
         }
 
         function toggleTurbo() {
