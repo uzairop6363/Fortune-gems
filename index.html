@@ -75,37 +75,32 @@
             position: relative;
         }
 
-        /* --- FRAME LOGIC (Updated) --- */
+        /* --- FRAME LOGIC (Final Version) --- */
         .reels-frame {
             display: flex;
-            gap: 4px; /* Reels ke beech ka gap */
+            gap: 4px;
             
-            /* 1. SAFETY BORDER (Agar image load na ho to ye dikhega) */
-            border: 5px solid #5c3a21; 
-            background-color: rgba(0,0,0,0.3);
-
-            /* 2. ASAL IMAGE (Lakri ka Frame) */
+            /* Purana Brown Border HATA DIYA */
+            border: none !important;
+            
+            /* Frame Image */
             background-image: url('assets/frame_wood.png');
             background-size: 100% 100%; 
             background-repeat: no-repeat;
             background-position: center;
 
-            /* Agar image load ho jaye, to border hata do (Optional, lekin safe hai) */
-            /* border: none; <--- Agar image pakka hai to is line ko uncomment karen */
-
-            /* Padding adjust ki hai taake frame reels ke upar na chadhe */
+            /* Padding taake symbols frame ke andar rahen */
             padding: 24px; 
             
-            /* Shadow */
             filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
         }
 
         .reel {
             width: 88px; 
-            height: 264px; /* 88px * 3 rows */
+            height: 264px;
             overflow: hidden;
             position: relative;
-            background: rgba(0, 0, 0, 0.5); /* Reels ke peeche andhera */
+            background: rgba(0, 0, 0, 0.5);
             border-radius: 2px;
         }
 
@@ -119,7 +114,6 @@
             transform: translateY(-900px);
         }
 
-        /* Symbols (Solid Tiles) */
         .symbol {
             width: 88px;
             height: 88px;
@@ -217,7 +211,7 @@
         const SYMBOL_HEIGHT = 88; 
         const TOTAL_SYMBOLS = 30; 
 
-        // Image Names Check (Ensure these exist in assets folder)
+        // Image Names
         const symbols = [
             'assets/sym_gem_red.png',
             'assets/sym_gem_blue.png',
@@ -252,7 +246,7 @@
         function spin() {
             if (isSpinning) return;
             isSpinning = true;
-            spinIcon.classList.add('spinning-active'); // Button Ghoomega
+            spinIcon.classList.add('spinning-active'); 
 
             const duration = isTurbo ? 0.5 : 2.0; 
 
@@ -273,7 +267,7 @@
                     strip.parentElement.classList.remove('blur');
                     strip.style.transition = 'none'; 
                 });
-                spinIcon.classList.remove('spinning-active'); // Button Ruk jayega
+                spinIcon.classList.remove('spinning-active'); 
                 isSpinning = false;
             }, (duration * 1000) + (isTurbo ? 300 : 1000));
         }
