@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fortune Gems: Jungle Edition</title>
+    <title>Fortune Gems Pro</title>
     <style>
         /* --- 1. CORE STYLING --- */
         body {
@@ -66,7 +66,7 @@
             text-shadow: 0px 2px 2px black;
         }
 
-        /* --- REELS AREA (Jahan Frame Lagega) --- */
+        /* --- REELS AREA --- */
         .reels-section {
             flex-grow: 1;
             display: flex;
@@ -75,35 +75,38 @@
             position: relative;
         }
 
-        /* --- YAHAN CHANGE HUA HAI (Wooden Frame Logic) --- */
+        /* --- FRAME LOGIC (Updated) --- */
         .reels-frame {
             display: flex;
-            gap: 5px; /* Reels ke beech ka gap */
+            gap: 4px; /* Reels ke beech ka gap */
             
-            /* Background Image (Lakri ka Frame) */
+            /* 1. SAFETY BORDER (Agar image load na ho to ye dikhega) */
+            border: 5px solid #5c3a21; 
+            background-color: rgba(0,0,0,0.3);
+
+            /* 2. ASAL IMAGE (Lakri ka Frame) */
             background-image: url('assets/frame_wood.png');
-            background-size: 100% 100%; /* Frame ko kheench kar fit karna */
+            background-size: 100% 100%; 
             background-repeat: no-repeat;
             background-position: center;
 
-            /* Padding bohot zaroori hai taake reels frame ke andar rahen */
-            padding: 22px; 
+            /* Agar image load ho jaye, to border hata do (Optional, lekin safe hai) */
+            /* border: none; <--- Agar image pakka hai to is line ko uncomment karen */
+
+            /* Padding adjust ki hai taake frame reels ke upar na chadhe */
+            padding: 24px; 
             
-            /* Purana Border Hata diya */
-            border: none;
-            
-            /* Thoda shadow taake frame utha hua lage */
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+            /* Shadow */
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
         }
 
         .reel {
-            width: 88px; /* Thoda adjust kiya taake frame mein fit aaye */
-            height: 264px; /* 88 x 3 */
+            width: 88px; 
+            height: 264px; /* 88px * 3 rows */
             overflow: hidden;
             position: relative;
-            /* Frame ke peeche agar khali jagah ho to wahan andhera dikhe */
-            background: rgba(0, 0, 0, 0.5); 
-            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.5); /* Reels ke peeche andhera */
+            border-radius: 2px;
         }
 
         .reel-strip {
@@ -116,7 +119,7 @@
             transform: translateY(-900px);
         }
 
-        /* Symbols (Ab Solid Tiles hain) */
+        /* Symbols (Solid Tiles) */
         .symbol {
             width: 88px;
             height: 88px;
@@ -131,7 +134,6 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            border-radius: 2px;
         }
 
         /* --- CONTROLS --- */
@@ -156,7 +158,12 @@
         .btn:active { transform: scale(0.9); filter: brightness(0.8); }
 
         .btn-small img { width: 70px; height: 70px; object-fit: contain; }
-        .btn-large img { width: 110px; height: 110px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2)); }
+        .btn-large img { 
+            width: 110px; 
+            height: 110px; 
+            object-fit: contain; 
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2)); 
+        }
 
         /* Animations */
         @keyframes rotate-center {
@@ -207,10 +214,10 @@
     <script>
         // --- JAVASCRIPT ---
         
-        // Settings (Updated sizes for frame fit)
         const SYMBOL_HEIGHT = 88; 
         const TOTAL_SYMBOLS = 30; 
 
+        // Image Names Check (Ensure these exist in assets folder)
         const symbols = [
             'assets/sym_gem_red.png',
             'assets/sym_gem_blue.png',
@@ -245,7 +252,7 @@
         function spin() {
             if (isSpinning) return;
             isSpinning = true;
-            spinIcon.classList.add('spinning-active');
+            spinIcon.classList.add('spinning-active'); // Button Ghoomega
 
             const duration = isTurbo ? 0.5 : 2.0; 
 
@@ -266,7 +273,7 @@
                     strip.parentElement.classList.remove('blur');
                     strip.style.transition = 'none'; 
                 });
-                spinIcon.classList.remove('spinning-active');
+                spinIcon.classList.remove('spinning-active'); // Button Ruk jayega
                 isSpinning = false;
             }, (duration * 1000) + (isTurbo ? 300 : 1000));
         }
