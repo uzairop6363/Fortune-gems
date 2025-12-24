@@ -46,7 +46,6 @@
         .home-btn {
             width: 45px;
             height: 45px;
-            transition: transform 0.1s;
             cursor: pointer;
         }
         .home-btn:active { transform: scale(0.9); }
@@ -66,42 +65,53 @@
             text-shadow: 0px 2px 2px black;
         }
 
-        /* --- REELS AREA --- */
+        /* --- REELS SECTION (Important Changes) --- */
         .reels-section {
             flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
+            position: relative; /* Zaroori hai taake frame absolute ho sake */
         }
 
-        /* --- FRAME LOGIC (Final Version) --- */
+        /* 1. FRAME OVERLAY IMAGE (Ye reels ke upar ayega) */
+        .frame-overlay {
+            position: absolute;
+            z-index: 10; /* Reels ke upar */
+            
+            /* Size adjust karen agar frame chota/bada lage */
+            width: 320px; 
+            height: 320px; 
+            
+            /* Center Alignment */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            
+            pointer-events: none; /* Click pass ho jayega */
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+        }
+
+        /* 2. REELS CONTAINER */
         .reels-frame {
             display: flex;
-            gap: 4px;
+            gap: 5px; /* Columns ke beech gap */
             
-            /* Purana Brown Border HATA DIYA */
+            /* Border aur Background KHATAM */
             border: none !important;
+            background: none !important;
             
-            /* Frame Image */
-            background-image: url('assets/frame_wood.png');
-            background-size: 100% 100%; 
-            background-repeat: no-repeat;
-            background-position: center;
-
-            /* Padding taake symbols frame ke andar rahen */
-            padding: 24px; 
-            
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
+            position: relative;
+            z-index: 1; /* Frame ke neeche */
         }
 
         .reel {
             width: 88px; 
-            height: 264px;
+            height: 264px; /* 3 Symbols visible */
             overflow: hidden;
             position: relative;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 2px;
+            background: rgba(0, 0, 0, 0.6); /* Thoda andhera */
+            border-radius: 4px;
         }
 
         .reel-strip {
@@ -126,7 +136,7 @@
         .symbol img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* Solid tiles */
             display: block;
         }
 
@@ -184,6 +194,9 @@
         </div>
 
         <div class="reels-section">
+            
+            <img src="assets/frame_wood.png" class="frame-overlay" alt="Game Frame">
+
             <div class="reels-frame">
                 <div class="reel"><div class="reel-strip" id="reel1"></div></div>
                 <div class="reel"><div class="reel-strip" id="reel2"></div></div>
@@ -211,7 +224,6 @@
         const SYMBOL_HEIGHT = 88; 
         const TOTAL_SYMBOLS = 30; 
 
-        // Image Names
         const symbols = [
             'assets/sym_gem_red.png',
             'assets/sym_gem_blue.png',
