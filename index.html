@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fortune Gems Pro</title>
+    <title>Fortune Gems: Jungle Edition</title>
     <style>
         /* --- 1. CORE STYLING --- */
         body {
@@ -66,7 +66,7 @@
             text-shadow: 0px 2px 2px black;
         }
 
-        /* --- REELS --- */
+        /* --- REELS AREA (Jahan Frame Lagega) --- */
         .reels-section {
             flex-grow: 1;
             display: flex;
@@ -75,22 +75,34 @@
             position: relative;
         }
 
+        /* --- YAHAN CHANGE HUA HAI (Wooden Frame Logic) --- */
         .reels-frame {
             display: flex;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 12px;
-            border: 3px solid #ffd700;
-            border-radius: 15px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(0,0,0,0.9);
+            gap: 5px; /* Reels ke beech ka gap */
+            
+            /* Background Image (Lakri ka Frame) */
+            background-image: url('assets/frame_wood.png');
+            background-size: 100% 100%; /* Frame ko kheench kar fit karna */
+            background-repeat: no-repeat;
+            background-position: center;
+
+            /* Padding bohot zaroori hai taake reels frame ke andar rahen */
+            padding: 22px; 
+            
+            /* Purana Border Hata diya */
+            border: none;
+            
+            /* Thoda shadow taake frame utha hua lage */
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
         }
 
         .reel {
-            width: 90px;
-            height: 270px; /* 3 Symbols Visible */
+            width: 88px; /* Thoda adjust kiya taake frame mein fit aaye */
+            height: 264px; /* 88 x 3 */
             overflow: hidden;
             position: relative;
-            background: rgba(0, 0, 0, 0.3);
+            /* Frame ke peeche agar khali jagah ho to wahan andhera dikhe */
+            background: rgba(0, 0, 0, 0.5); 
             border-radius: 4px;
         }
 
@@ -101,26 +113,25 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            transform: translateY(-900px); /* Initial Position */
+            transform: translateY(-900px);
         }
 
-        /* --- SOLID TILES STYLE --- */
+        /* Symbols (Ab Solid Tiles hain) */
         .symbol {
-            width: 90px;
-            height: 90px;
+            width: 88px;
+            height: 88px;
             display: flex;
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
-            /* Ab background ki zaroorat nahi kyunki image full tile hai */
         }
 
         .symbol img {
-            width: 100%; /* Full Block */
+            width: 100%;
             height: 100%;
-            object-fit: cover; /* Tile poora cover karegi */
+            object-fit: cover;
             display: block;
-            border-radius: 4px; /* Slight round corners for tiles */
+            border-radius: 2px;
         }
 
         /* --- CONTROLS --- */
@@ -144,42 +155,17 @@
         }
         .btn:active { transform: scale(0.9); filter: brightness(0.8); }
 
-        .btn-small img { 
-            width: 70px; 
-            height: 70px; 
-            object-fit: contain;
-        }
-        
-        .btn-large img { 
-            width: 110px; 
-            height: 110px; 
-            object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2));
-        }
+        .btn-small img { width: 70px; height: 70px; object-fit: contain; }
+        .btn-large img { width: 110px; height: 110px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2)); }
 
-        /* --- ANIMATIONS --- */
-        
-        /* 1. Spin Button Rotation Animation */
+        /* Animations */
         @keyframes rotate-center {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Class to add via JS when spinning */
-        .spinning-active {
-            animation: rotate-center 0.8s linear infinite; /* Smooth continuous spin */
-        }
-
-        /* Turbo Active State */
-        .turbo-active img {
-            filter: brightness(1.5) drop-shadow(0 0 8px #00ffff);
-        }
-
-        /* Blur Effect on Reels */
-        .blur {
-            filter: blur(8px); /* Stronger blur for speed feel */
-            transition: filter 0.1s;
-        }
+        .spinning-active { animation: rotate-center 0.8s linear infinite; }
+        .turbo-active img { filter: brightness(1.5) drop-shadow(0 0 8px #00ffff); }
+        .blur { filter: blur(8px); transition: filter 0.1s; }
 
     </style>
 </head>
@@ -205,30 +191,26 @@
         </div>
 
         <div class="controls-area">
-            
             <div class="btn btn-small" id="turboBtn" onclick="toggleTurbo()">
                 <img src="assets/btn_turbo.png" alt="Turbo">
             </div>
-
             <div class="btn btn-large" onclick="spin()">
                 <img src="assets/btn_spin.png" id="spinIcon" alt="Spin">
             </div>
-
             <div class="btn btn-small" onclick="toggleAuto()">
                 <img src="assets/btn_auto.png" alt="Auto">
             </div>
-
         </div>
 
     </div>
 
     <script>
-        // --- JAVASCRIPT LOGIC ---
-
-        const SYMBOL_HEIGHT = 90; 
+        // --- JAVASCRIPT ---
+        
+        // Settings (Updated sizes for frame fit)
+        const SYMBOL_HEIGHT = 88; 
         const TOTAL_SYMBOLS = 30; 
 
-        // Images List
         const symbols = [
             'assets/sym_gem_red.png',
             'assets/sym_gem_blue.png',
@@ -246,10 +228,8 @@
             document.getElementById('reel2'),
             document.getElementById('reel3')
         ];
-
         const spinIcon = document.getElementById('spinIcon');
 
-        // 1. Initialize
         function initReels() {
             reelStrips.forEach(strip => {
                 let html = '';
@@ -262,12 +242,9 @@
             });
         }
 
-        // 2. Spin Function
         function spin() {
             if (isSpinning) return;
             isSpinning = true;
-
-            // ANIMATION START: Button ko ghumana shuru karo
             spinIcon.classList.add('spinning-active');
 
             const duration = isTurbo ? 0.5 : 2.0; 
@@ -275,49 +252,33 @@
             reelStrips.forEach((strip, index) => {
                 strip.parentElement.classList.add('blur');
                 const delay = index * (isTurbo ? 0.1 : 0.3);
-
                 strip.style.transition = `transform ${duration}s cubic-bezier(0.5, 0, 0.2, 1)`;
                 
                 setTimeout(() => {
-                    // Logic to land on exact tile
                     const randomStopIndex = Math.floor(Math.random() * 10) + 15; 
                     const targetPosition = -(randomStopIndex * SYMBOL_HEIGHT);
                     strip.style.transform = `translateY(${targetPosition}px)`;
                 }, delay * 1000);
             });
 
-            // SPIN END LOGIC
-            const totalTime = (duration * 1000) + (isTurbo ? 300 : 1000);
-            
             setTimeout(() => {
                 reelStrips.forEach(strip => {
                     strip.parentElement.classList.remove('blur');
                     strip.style.transition = 'none'; 
                 });
-                
-                // ANIMATION STOP: Button ghumna band
                 spinIcon.classList.remove('spinning-active');
                 isSpinning = false;
-                
-            }, totalTime);
+            }, (duration * 1000) + (isTurbo ? 300 : 1000));
         }
 
         function toggleTurbo() {
             isTurbo = !isTurbo;
-            const btn = document.getElementById('turboBtn');
-            if(isTurbo) {
-                btn.classList.add('turbo-active');
-            } else {
-                btn.classList.remove('turbo-active');
-            }
+            document.getElementById('turboBtn').classList.toggle('turbo-active');
         }
         
-        function toggleAuto() {
-            alert("Auto Spin Feature in Development!");
-        }
+        function toggleAuto() { alert("Auto Spin feature coming soon!"); }
 
         initReels();
-
     </script>
 </body>
 </html>
