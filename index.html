@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fortune Gems Pro</title>
     <style>
-        /* --- 1. CORE STYLING --- */
+        /* --- CORE STYLING --- */
         body {
             margin: 0;
             padding: 0;
@@ -34,38 +34,69 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
-        /* --- HEADER --- */
+        /* --- HEADER (New Balance UI) --- */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            z-index: 10;
+            z-index: 20;
         }
 
         .home-btn {
             width: 45px;
             height: 45px;
             cursor: pointer;
+            transition: transform 0.1s;
         }
         .home-btn:active { transform: scale(0.9); }
         .home-btn img { width: 100%; height: 100%; object-fit: contain; }
         
-        .balance-box {
-            background: linear-gradient(90deg, #1a1a1a, #000);
-            border: 2px solid #d4af37;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 16px;
-            color: #ffd700;
-            min-width: 120px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            text-shadow: 0px 2px 2px black;
+        /* New Balance Container */
+        .balance-container {
+            position: relative;
+            width: 160px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- REELS SECTION (Final Fixes) --- */
+        /* Background Image Plate */
+        .balance-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Text and Icon Layer */
+        .balance-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+            padding-right: 10px; /* Thoda right shift text center karne k liye */
+        }
+
+        .balance-icon {
+            width: 30px;
+            height: 30px;
+            filter: drop-shadow(0 0 5px gold);
+        }
+
+        .balance-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 2px #000;
+            font-family: 'Courier New', Courier, monospace; /* Digital look */
+        }
+
+        /* --- REELS SECTION --- */
         .reels-section {
             flex-grow: 1;
             display: flex;
@@ -74,36 +105,25 @@
             position: relative; 
         }
 
-        /* 1. FRAME OVERLAY (Bada Size) */
         .frame-overlay {
             position: absolute;
             z-index: 10; 
-            
-            /* Frame ko bada kiya taake corners na katen */
             width: 360px; 
             height: 360px; 
-            
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            
             pointer-events: none; 
             filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9));
         }
 
-        /* 2. REELS CONTAINER (Size Adjustment) */
         .reels-frame {
             display: flex;
             gap: 5px; 
-            
             border: none !important;
             background: none !important;
-            
             position: relative;
             z-index: 1; 
-
-            /* --- CRITICAL FIX --- */
-            /* Reels ko thoda chota kiya taake wo frame ke andar fit hon */
             transform: scale(0.90); 
         }
 
@@ -171,7 +191,6 @@
             filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.2)); 
         }
 
-        /* Animations */
         @keyframes rotate-center {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -180,25 +199,51 @@
         .turbo-active img { filter: brightness(1.5) drop-shadow(0 0 8px #00ffff); }
         .blur { filter: blur(8px); transition: filter 0.1s; }
 
+        /* Win Animation Text */
+        #winMessage {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px red;
+            display: none;
+            z-index: 100;
+            animation: pop 0.5s ease-out;
+        }
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            80% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
     </style>
 </head>
 <body>
 
     <div class="game-wrapper">
         
+        <div id="winMessage">BIG WIN!</div>
+
         <div class="header">
             <div class="home-btn" onclick="alert('Lobby Feature Coming Soon')">
                 <img src="assets/btn_home.png" alt="Home">
             </div>
-            <div class="balance-box">
-                PKR <span id="balance">5,000</span>
+            
+            <div class="balance-container">
+                <img src="assets/ui_balance_bg.png" class="balance-bg" alt="BG">
+                
+                <div class="balance-content">
+                    <img src="assets/icon_cash.png" class="balance-icon" alt="$">
+                    <span id="balanceText" class="balance-text">5000</span>
+                </div>
             </div>
         </div>
 
         <div class="reels-section">
-            
             <img src="assets/frame_wood.png" class="frame-overlay" alt="Game Frame">
-
             <div class="reels-frame">
                 <div class="reel"><div class="reel-strip" id="reel1"></div></div>
                 <div class="reel"><div class="reel-strip" id="reel2"></div></div>
@@ -221,10 +266,14 @@
     </div>
 
     <script>
-        // --- JAVASCRIPT ---
+        // --- JAVASCRIPT LOGIC ---
         
         const SYMBOL_HEIGHT = 88; 
         const TOTAL_SYMBOLS = 30; 
+        
+        // Game Logic Variables
+        let currentBalance = 5000;
+        const betAmount = 100; // Har spin ke 100 katenge
 
         const symbols = [
             'assets/sym_gem_red.png',
@@ -244,8 +293,11 @@
             document.getElementById('reel3')
         ];
         const spinIcon = document.getElementById('spinIcon');
+        const balanceDisplay = document.getElementById('balanceText');
+        const winMsg = document.getElementById('winMessage');
 
         function initReels() {
+            updateBalance(0); // Update text on load
             reelStrips.forEach(strip => {
                 let html = '';
                 for(let i=0; i < TOTAL_SYMBOLS; i++) { 
@@ -259,8 +311,19 @@
 
         function spin() {
             if (isSpinning) return;
+            
+            // 1. Check Balance
+            if(currentBalance < betAmount) {
+                alert("Low Balance! Please Recharge.");
+                return;
+            }
+
+            // 2. Deduct Money
+            updateBalance(-betAmount);
+            
             isSpinning = true;
             spinIcon.classList.add('spinning-active'); 
+            winMsg.style.display = 'none'; // Hide win message
 
             const duration = isTurbo ? 0.5 : 2.0; 
 
@@ -283,7 +346,36 @@
                 });
                 spinIcon.classList.remove('spinning-active'); 
                 isSpinning = false;
+                
+                // 3. CHECK WIN (Simple Logic for Demo)
+                checkWin();
+
             }, (duration * 1000) + (isTurbo ? 300 : 1000));
+        }
+
+        // --- Win/Loss Logic ---
+        function checkWin() {
+            // Is game mein abhi 30% chance hai jeetne ka (Fake Logic for visuals)
+            // Asal game mein array match karna hota hai, lekin ye demo hai
+            
+            const isWin = Math.random() < 0.3; // 30% chance
+
+            if(isWin) {
+                const winAmount = betAmount * (Math.floor(Math.random() * 5) + 2); // 2x to 6x win
+                updateBalance(winAmount);
+                showWinEffect(winAmount);
+            }
+        }
+
+        function updateBalance(amount) {
+            currentBalance += amount;
+            balanceDisplay.innerText = currentBalance;
+        }
+
+        function showWinEffect(amount) {
+            winMsg.innerText = `WIN: +${amount}`;
+            winMsg.style.display = 'block';
+            // Yahan sound effect bhi laga sakte hain
         }
 
         function toggleTurbo() {
