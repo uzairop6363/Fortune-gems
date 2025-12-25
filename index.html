@@ -5,268 +5,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fortune Gems Pro: Alive Edition</title>
     <style>
-        /* --- 1. CORE STYLING --- */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #050505;
-            color: white;
-            font-family: 'Courier New', Courier, monospace;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* --- 1. LOADING SCREEN STYLES (NEW ADDITION) --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            /* Aapka generate kiya hua poster */
+            background-image: url('assets/poster_gems.jpg'); 
+            background-size: cover; background-position: center;
+            z-index: 9999; /* Game ke upar */
+            display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+            padding-bottom: 80px;
+            transition: opacity 0.8s ease-out;
         }
 
-        /* --- ANIMATION: Background Breathing --- */
+        .loading-text {
+            color: #ffd700; font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold;
+            margin-bottom: 10px; text-shadow: 0 2px 5px #000; letter-spacing: 2px;
+            text-transform: uppercase; animation: blink 1.5s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        .progress-container {
+            width: 80%; max-width: 320px; height: 35px;
+            /* Aapka generate kiya hua frame */
+            background-image: url('assets/frame_gems.png'); 
+            background-size: 100% 100%; background-repeat: no-repeat;
+            display: flex; align-items: center; padding: 0 6px;
+            box-sizing: border-box; filter: drop-shadow(0 5px 10px #000);
+        }
+
+        .progress-fill {
+            height: 60%; width: 0%;
+            /* Ruby & Gold Gradient */
+            background: linear-gradient(90deg, #b22222, #ff4500, #ffd700); 
+            border-radius: 4px; box-shadow: 0 0 10px #ff4500;
+            transition: width 0.1s linear;
+        }
+
+        /* --- 2. GAME VISIBILITY LOGIC --- */
+        .game-wrapper {
+            opacity: 0; /* Pehle Chupa rahega */
+            transition: opacity 1s ease-in;
+        }
+        .game-wrapper.active { opacity: 1; /* Loading ke baad dikhega */ }
+
+
+        /* --- 3. EXISTING GAME STYLING (UNCHANGED) --- */
+        body {
+            margin: 0; padding: 0; background-color: #050505; color: white;
+            font-family: 'Courier New', Courier, monospace;
+            height: 100vh; width: 100vw; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+
         @keyframes bg-drift {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); } /* Slight Zoom */
-            100% { transform: scale(1); }
+            0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); }
         }
 
         .game-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            max-width: 480px;
+            position: relative; width: 100%; height: 100%; max-width: 480px;
             background-image: url('assets/bg_table.jpg');
-            background-size: cover; 
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            background-size: cover; background-position: center;
+            display: flex; flex-direction: column; justify-content: space-between;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            
-            /* Background Zinda ho gaya */
             animation: bg-drift 20s infinite ease-in-out;
         }
 
-        /* --- HEADER --- */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            z-index: 20;
-        }
-
-        .home-btn {
-            width: 45px;
-            height: 45px;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; z-index: 20; }
+        .home-btn { width: 45px; height: 45px; cursor: pointer; transition: transform 0.1s; }
         .home-btn:active { transform: scale(0.9); }
         .home-btn img { width: 100%; height: 100%; object-fit: contain; }
         
-        .balance-container {
-            position: relative;
-            width: 160px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .balance-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .balance-content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            justify-content: center;
-            padding-right: 10px;
-        }
-
+        .balance-container { position: relative; width: 160px; height: 50px; display: flex; justify-content: center; align-items: center; }
+        .balance-bg { position: absolute; width: 100%; height: 100%; z-index: 1; }
+        .balance-content { position: relative; z-index: 2; display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center; padding-right: 10px; }
         .balance-icon { width: 30px; height: 30px; filter: drop-shadow(0 0 5px gold); }
         .balance-text { font-size: 18px; font-weight: bold; color: #fff; text-shadow: 0 2px 2px #000; }
 
-        /* --- REELS SECTION --- */
-        .reels-section {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative; 
-        }
+        .reels-section { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
 
-        /* --- ANIMATION: Frame Glow --- */
         @keyframes jungle-glow {
             0% { filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); }
-            50% { filter: drop-shadow(0 15px 35px rgba(255, 215, 0, 0.4)); } /* Gold Flash */
+            50% { filter: drop-shadow(0 15px 35px rgba(255, 215, 0, 0.4)); }
             100% { filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); }
         }
 
         .frame-overlay {
-            position: absolute;
-            z-index: 10; 
-            width: 360px; 
-            height: 360px; 
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none; 
-            
-            /* Frame breathing effect */
+            position: absolute; z-index: 10; width: 360px; height: 360px; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; 
             animation: jungle-glow 5s infinite ease-in-out;
         }
 
         .reels-frame {
-            display: flex;
-            gap: 5px; 
-            border: none !important;
-            background: none !important;
-            position: relative;
-            z-index: 1; 
-            transform: scale(0.90); 
+            display: flex; gap: 5px; border: none !important; background: none !important;
+            position: relative; z-index: 1; transform: scale(0.90); 
         }
 
         .reel {
-            width: 88px; 
-            height: 264px; 
-            overflow: hidden;
-            position: relative;
-            background: rgba(0, 0, 0, 0.6); 
-            border-radius: 4px;
+            width: 88px; height: 264px; overflow: hidden; position: relative;
+            background: rgba(0, 0, 0, 0.6); border-radius: 4px;
         }
 
         .reel-strip {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            transform: translateY(-900px);
+            position: absolute; top: 0; left: 0; width: 100%; display: flex; flex-direction: column; transform: translateY(-900px);
         }
 
         .symbol {
-            width: 88px;
-            height: 88px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
-            position: relative;
-            overflow: hidden; /* Shine bahar na jaye */
+            width: 88px; height: 88px; display: flex; justify-content: center; align-items: center;
+            box-sizing: border-box; position: relative; overflow: hidden;
         }
 
-        .symbol img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-            display: block;
-            position: relative;
-            z-index: 1;
-        }
+        .symbol img { width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 1; }
 
-        /* --- ANIMATION: Symbol Shine (Luxury Effect) --- */
         .symbol::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 50%;
-            height: 100%;
+            content: ''; position: absolute; top: 0; left: -150%; width: 50%; height: 100%;
             background: linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent);
-            transform: skewX(-25deg);
-            z-index: 2;
-            animation: shine-sweep 6s infinite;
+            transform: skewX(-25deg); z-index: 2; animation: shine-sweep 6s infinite;
         }
         
         @keyframes shine-sweep {
-            0% { left: -150%; }
-            20% { left: 150%; } /* Fast swipe */
-            100% { left: 150%; } /* Wait */
+            0% { left: -150%; } 20% { left: 150%; } 100% { left: 150%; }
         }
 
-        /* --- CONTROLS --- */
         .controls-area {
-            height: 140px;
-            background: linear-gradient(to top, rgba(0,0,0,1), transparent);
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-            padding-bottom: 20px;
-            z-index: 20;
+            height: 140px; background: linear-gradient(to top, rgba(0,0,0,1), transparent);
+            display: flex; justify-content: space-evenly; align-items: center; padding-bottom: 20px; z-index: 20;
         }
 
-        .btn {
-            cursor: pointer;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.1s;
-        }
+        .btn { cursor: pointer; position: relative; display: flex; justify-content: center; align-items: center; transition: transform 0.1s; }
         .btn:active { transform: scale(0.9); filter: brightness(0.8); }
-
         .btn-small img { width: 70px; height: 70px; object-fit: contain; }
 
-        /* --- ANIMATION: Spin Button Pulse --- */
         @keyframes pulse-gold {
             0% { transform: scale(1); filter: drop-shadow(0 0 5px gold); }
             50% { transform: scale(1.05); filter: drop-shadow(0 0 15px gold); brightness(1.2); }
             100% { transform: scale(1); filter: drop-shadow(0 0 5px gold); }
         }
 
-        .btn-large img { 
-            width: 110px; 
-            height: 110px; 
-            object-fit: contain; 
-            
-            /* Dhadkan */
-            animation: pulse-gold 2s infinite ease-in-out;
-        }
+        .btn-large img { width: 110px; height: 110px; object-fit: contain; animation: pulse-gold 2s infinite ease-in-out; }
 
-        /* Spin Animation (Pulse ko override karega) */
-        @keyframes rotate-center {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes rotate-center { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .spinning-active { animation: rotate-center 0.5s linear infinite !important; }
         
         .turbo-active img { filter: brightness(1.5) drop-shadow(0 0 8px #00ffff); }
         .blur { filter: blur(5px); transition: filter 0.1s; }
 
-        /* Win Message */
         #winMessage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 50px;
-            font-weight: 900;
-            color: #ffd700;
-            text-shadow: 0 0 10px red, 0 0 20px orange;
-            display: none;
-            z-index: 100;
-            font-family: Arial, sans-serif;
-            text-transform: uppercase;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 50px; font-weight: 900; color: #ffd700;
+            text-shadow: 0 0 10px red, 0 0 20px orange; display: none; z-index: 100;
+            font-family: Arial, sans-serif; text-transform: uppercase;
             animation: pop-bounce 0.8s ease-out infinite alternate;
         }
         
-        @keyframes pop-bounce {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            100% { transform: translate(-50%, -50%) scale(1.2); }
-        }
+        @keyframes pop-bounce { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.2); } }
 
     </style>
 </head>
 <body>
 
-    <div class="game-wrapper">
+    <div id="loader">
+        <div class="loading-text" id="loadStatus">SEARCHING TREASURE...</div>
+        <div class="progress-container">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="game-wrapper" id="gameScreen">
         
         <div id="winMessage">BIG WIN!</div>
 
@@ -308,12 +213,50 @@
     </div>
 
     <script>
-        // --- JAVASCRIPT LOGIC ---
+        // --- NEW: LOADING LOGIC SCRIPT (3 Seconds) ---
+        window.onload = function() {
+            const bar = document.getElementById('progressBar');
+            const loader = document.getElementById('loader');
+            const status = document.getElementById('loadStatus');
+            const game = document.getElementById('gameScreen');
+            let width = 0;
+
+            const simulateLoading = () => {
+                // Calculation: 3000ms total. 
+                // We update roughly every 30ms. Increment ~1%.
+                width++;
+                
+                if(width > 100) width = 100;
+                bar.style.width = width + '%';
+
+                // Status Text Update
+                if(width < 30) status.innerText = "LOADING GEMS...";
+                else if(width < 70) status.innerText = "POLISHING DIAMONDS...";
+                else status.innerText = "OPENING GATES...";
+
+                if (width >= 100) {
+                    // Loading Complete
+                    setTimeout(() => {
+                        loader.style.opacity = '0'; // Fade Out
+                        setTimeout(() => {
+                            loader.style.display = 'none'; // Remove
+                            game.classList.add('active'); // Fade In Game
+                            initReels(); // Initialize Game Logic here
+                        }, 800);
+                    }, 200);
+                } else {
+                    // 30ms delay to finish in approx 3 seconds
+                    setTimeout(simulateLoading, 30);
+                }
+            };
+            simulateLoading();
+        };
+
+        // --- EXISTING GAME JAVASCRIPT (UNCHANGED LOGIC) ---
         
         const SYMBOL_HEIGHT = 88; 
         const TOTAL_SYMBOLS = 30; 
         
-        // Game Variables
         let currentBalance = 5000;
         const betAmount = 100;
 
@@ -359,11 +302,10 @@
                 return;
             }
 
-            // Deduct Money
             updateBalance(-betAmount);
             
             isSpinning = true;
-            spinIcon.classList.add('spinning-active'); // Spin animation starts
+            spinIcon.classList.add('spinning-active');
             winMsg.style.display = 'none';
 
             const duration = isTurbo ? 0.5 : 2.0; 
@@ -385,7 +327,7 @@
                     strip.parentElement.classList.remove('blur');
                     strip.style.transition = 'none'; 
                 });
-                spinIcon.classList.remove('spinning-active'); // Pulse animation wapis aa jayegi
+                spinIcon.classList.remove('spinning-active');
                 isSpinning = false;
                 
                 checkWin();
@@ -394,7 +336,6 @@
         }
 
         function checkWin() {
-            // Demo Logic: 30% chance to win
             const isWin = Math.random() < 0.3; 
 
             if(isWin) {
@@ -421,7 +362,6 @@
         
         function toggleAuto() { alert("Auto Spin feature coming soon!"); }
 
-        initReels();
     </script>
 </body>
 </html>
